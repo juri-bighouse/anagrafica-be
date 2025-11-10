@@ -1,0 +1,43 @@
+image: maven:3.9.4-eclipse-temurin-17
+
+stages:
+  - build
+  - test
+  - deploy
+
+variables:
+  MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
+  MAVEN_CLI_OPTS: "-B -e -ntp"
+
+cache:
+  key: ${CI_PROJECT_NAME}
+  paths:
+    - .m2/repository/
+
+build_backend:
+  stage: build
+  script:
+    - echo "🚧 Compilazione backend Spring Boot..."
+    - mvn $MAVEN_CLI_OPTS clean package -DskipTests
+    - echo "Build completata."
+  artifacts:
+    paths:
+      - target/
+    expire_in: 1 week
+
+test_backend:
+  stage: test
+  script:
+    - echo "Esecuzione test unitari..."
+    - mvn $MAVEN_CLI_OPTS test
+    - echo "Test completati."
+
+deploy_backend:
+  stage: deploy
+  script:
+    - echo "Simulazione deploy backend..."
+    - echo "Pubblicazione artefatti jar simulata."
+    - ls -lh target/
+  when: manual
+  only:
+    - main
